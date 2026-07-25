@@ -1,33 +1,52 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody))]
 public class MovimientoJugador : MonoBehaviour
-{public float velocidad = 5f;
-    private Rigidbody rb;
-    private Transform camaraPrincipal;
+{
+    public float velocidad = 5f;
+    public float fuerzaSalto = 7f;
+    public Transform puntoSuelo;
+    public float radioChequeoSuelo = 0.2f;
+    public LayerMask capaSuelo;
 
-    void Start()
+    private Rigidbody rb;
+    private bool enElSuelo;
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        camaraPrincipal = Camera.main.transform;
+        rb.freezeRotation = true; // evita que el objeto se caiga de costado
     }
 
     void Update()
     {
-        float moverH = Input.GetAxisRaw("Horizontal");
-        float moverV = Input.GetAxisRaw("Vertical");
+        if (Keyboard.current == null)
+        {
+            return;
+        }
 
-        Vector3 adelante = camaraPrincipal.forward;
-        Vector3 derecha = camaraPrincipal.right;
+        // --- Movimiento horizontal ---
+        float movimientoX = 0f;
+        float movimientoZ = 0f;
 
-        adelante.y = 0f;
-        derecha.y = 0f;
+        if (Keyboard.current.aKey.isPressed) movimientoX = -1f;
+        if (Keyboard.current.dKey.isPressed) movimientoX = 1f;
+        if (Keyboard.current.wKey.isPressed) movimientoZ = 1f;
+        if (Keyboard.current.sKey.isPressed) movimientoZ = -1f;
 
-        adelante.Normalize();
-        derecha.Normalize();
+        Vector3 movimiento = new Vector3(movimientoX, 0f, movimientoZ).normalized;
+        transform.Translate(movimiento * velocidad * Time.deltaTime, Space.World);
 
-        Vector3 direccion = (adelante * moverV + derecha * moverH).normalized;
-        Vector3 nuevaPosicion = rb.position + direccion * velocidad * Time.deltaTime;
-        
-        rb.MovePosition(nuevaPosicion);
+        // --- Chequeo de suelo ---
+        Vector3 origen = puntoSuelo != null ? puntoSuelo.position : transform.position;
+        enElSuelo = Physics.CheckSphere(origen, radioChequeoSuelo, capaSuelo);
+
+        // --- Salto con Espacio ---
+        if (Keyboard.current.spaceKey.wasPressedThisFrame && enElSuelo)
+        {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
+        }
     }
 }
