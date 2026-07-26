@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 70666899d3ef58347a1b877eaefd9e06
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - escenarioPuzzleInterior: {fileID: 919132149155446097, guid: eecef13bce15488438c2e3ba9a082a26, type: 3}
+  - camaraExterior: {instanceID: 0}
+  - camaraInterior: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,2 +1,13 @@
 fileFormatVersion: 2
 guid: 9ed5ea606959fb648a0d9796acafcf43
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - rampaDeAcceso: {instanceID: 0}
+  - cabezaMario: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
