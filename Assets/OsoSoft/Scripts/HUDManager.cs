@@ -11,6 +11,15 @@ public class HUDManager : MonoBehaviour
     {
         if (GameManager.instancia == null) return;
 
+        // NUEVO: Si llegamos a la meta, apagamos los textos para que no estorben
+        if (GameManager.instancia.monedas >= GameManager.instancia.monedasVictoria)
+        {
+            textoVidas.gameObject.SetActive(false);
+            textoMonedas.gameObject.SetActive(false);
+            textoTiempo.gameObject.SetActive(false);
+            return; // Detiene el contador
+        }
+
         textoVidas.text = "Vidas: " + GameManager.instancia.vidas;
         textoMonedas.text = "Monedas: " + GameManager.instancia.monedas;
 

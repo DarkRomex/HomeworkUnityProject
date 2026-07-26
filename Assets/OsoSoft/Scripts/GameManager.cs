@@ -8,12 +8,19 @@ public class GameManager : MonoBehaviour
     [Header("Datos del juego")]
     public int vidas = 3;
     public int monedas = 0;
-    public int monedasNecesarias = 5;
+    public int monedasRampa = 5; 
+    
+    // Si son 5 en el primer nivel y 24 en el segundo, el total para ganar es 29.
+    public int monedasVictoria = 29; 
     public float tiempo = 0f;
 
-    [Header("Elementos que aparecen al juntar las 5 estrellas")]
+    [Header("Elementos Escena 1")]
     public GameObject rampaDeAcceso; 
     public GameObject cabezaMario; 
+
+    [Header("Final (Victoria)")]
+    public GameObject mensajeFelicidades; 
+    public GameObject[] elementosHUD; // Arrastra aquí TextoVidas, TextoMonedas y TextoTiempo
 
     private void Awake()
     {
@@ -32,7 +39,6 @@ public class GameManager : MonoBehaviour
     {
         tiempo += Time.deltaTime;
 
-        // Si estamos en la escena principal, buscamos la rampa y la cabeza si están inactivas
         if (SceneManager.GetActiveScene().name == "MarioGame")
         {
             if (rampaDeAcceso == null)
@@ -46,8 +52,7 @@ public class GameManager : MonoBehaviour
                 if (cabeza != null) cabezaMario = cabeza;
             }
 
-            // Si ya se consiguieron las 5 monedas antes, nos aseguramos de que sigan visibles
-            if (monedas >= monedasNecesarias)
+            if (monedas >= monedasRampa)
             {
                 if (rampaDeAcceso != null && !rampaDeAcceso.activeSelf) rampaDeAcceso.SetActive(true);
                 if (cabezaMario != null && !cabezaMario.activeSelf) cabezaMario.SetActive(true);
@@ -58,13 +63,26 @@ public class GameManager : MonoBehaviour
     public void AgregarMoneda(int cantidad)
     {
         monedas += cantidad;
-        Debug.Log("Estrellas recogidas: " + monedas + " de " + monedasNecesarias);
+        Debug.Log("Objetos recogidos: " + monedas); 
 
-        if (monedas >= monedasNecesarias)
+        if (monedas == monedasRampa)
         {
-            Debug.Log("¡5 estrellas conseguidas! Activando rampa y cabeza de Mario.");
             if (rampaDeAcceso != null) rampaDeAcceso.SetActive(true);
             if (cabezaMario != null) cabezaMario.SetActive(true);
+        }
+
+        if (monedas >= monedasVictoria)
+        {
+            Debug.Log("¡Misión completada!"); 
+            
+            // 1. Mostrar mensaje gigante
+            if (mensajeFelicidades != null) mensajeFelicidades.SetActive(true);
+            
+            // 2. Ocultar los textos del HUD
+            foreach (GameObject hudElement in elementosHUD)
+            {
+                if (hudElement != null) hudElement.SetActive(false);
+            }
         }
     }
 
