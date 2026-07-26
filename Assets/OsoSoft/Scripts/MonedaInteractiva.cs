@@ -8,22 +8,32 @@ public class MonedaInteractiva : MonoBehaviour
     public Vector3 ejeGiro = Vector3.up;
 
     private bool recolectada = false;
+    private Collider miCollider;
+    private Renderer[] renderersMoneda;
+
+    void Awake()
+    {
+        miCollider = GetComponent<Collider>();
+        renderersMoneda = GetComponentsInChildren<Renderer>();
+    }
 
     void Update()
     {
         if (!recolectada)
         {
-            // Hace que la moneda dé vueltas constantemente sobre su eje
             transform.Rotate(ejeGiro * velocidadGiro * Time.deltaTime);
         }
     }
 
     void OnTriggerEnter(Collider other)
     {
-        // Detecta cuando el jugador toca la moneda
         if (other.CompareTag("Player") && !recolectada)
         {
             recolectada = true;
+
+            if (AudioManager.instancia != null)
+                AudioManager.instancia.ReproducirMoneda();
+
             StartCoroutine(AnimacionRecoleccion());
         }
     }
@@ -35,7 +45,9 @@ public class MonedaInteractiva : MonoBehaviour
         Vector3 escalaInicial = transform.localScale;
         Vector3 posicionInicial = transform.position;
 
-        // Animación suave: se eleva un poco y se encoge hasta desaparecer
+        if (miCollider != null)
+            miCollider.enabled = false;
+
         while (tiempo < duracionAnimacion)
         {
             tiempo += Time.deltaTime;
@@ -50,4 +62,3 @@ public class MonedaInteractiva : MonoBehaviour
         Destroy(gameObject);
     }
 }
-
