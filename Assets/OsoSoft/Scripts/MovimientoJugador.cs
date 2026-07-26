@@ -12,21 +12,18 @@ public class MovimientoJugador : MonoBehaviour
 
     private Rigidbody rb;
     private bool enElSuelo;
+    private Vector3 movimiento;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true; // evita que el objeto se caiga de costado
+        rb.freezeRotation = true;
     }
 
     void Update()
     {
-        if (Keyboard.current == null)
-        {
-            return;
-        }
+        if (Keyboard.current == null) return;
 
-        // --- Movimiento horizontal ---
         float movimientoX = 0f;
         float movimientoZ = 0f;
 
@@ -35,18 +32,26 @@ public class MovimientoJugador : MonoBehaviour
         if (Keyboard.current.wKey.isPressed) movimientoZ = 1f;
         if (Keyboard.current.sKey.isPressed) movimientoZ = -1f;
 
-        Vector3 movimiento = new Vector3(movimientoX, 0f, movimientoZ).normalized;
-        transform.Translate(movimiento * velocidad * Time.deltaTime, Space.World);
+        movimiento = new Vector3(movimientoX, 0f, movimientoZ).normalized;
 
-        // --- Chequeo de suelo ---
         Vector3 origen = puntoSuelo != null ? puntoSuelo.position : transform.position;
         enElSuelo = Physics.CheckSphere(origen, radioChequeoSuelo, capaSuelo);
 
-        // --- Salto con Espacio ---
         if (Keyboard.current.spaceKey.wasPressedThisFrame && enElSuelo)
         {
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
         }
+    }
+
+    void FixedUpdate()
+    {
+        Vector3 nuevaVelocidad = new Vector3(
+            movimiento.x * velocidad,
+            rb.linearVelocity.y,
+            movimiento.z * velocidad
+        );
+
+        rb.linearVelocity = nuevaVelocidad;
     }
 }
