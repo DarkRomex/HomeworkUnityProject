@@ -7,14 +7,19 @@ public class MonedaInteractiva : MonoBehaviour
     public float velocidadGiro = 100f;
     public Vector3 ejeGiro = Vector3.up;
 
+    [Header("Recompensa")]
+    public int valorMoneda = 1;
+
+    [Header("Animación")]
+    public float duracionAnimacion = 0.25f;
+    public float alturaSubida = 1.5f;
+
     private bool recolectada = false;
     private Collider miCollider;
-    private Renderer[] renderersMoneda;
 
     void Awake()
     {
         miCollider = GetComponent<Collider>();
-        renderersMoneda = GetComponentsInChildren<Renderer>();
     }
 
     void Update()
@@ -27,33 +32,35 @@ public class MonedaInteractiva : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !recolectada)
-        {
-            recolectada = true;
+        if (!other.CompareTag("Player") || recolectada)
+            return;
 
-            if (AudioManager.instancia != null)
-                AudioManager.instancia.ReproducirMoneda();
+        recolectada = true;
 
-            StartCoroutine(AnimacionRecoleccion());
-        }
+        if (miCollider != null)
+            miCollider.enabled = false;
+
+        if (GameManager.instancia != null)
+            GameManager.instancia.AgregarMoneda(valorMoneda);
+
+        if (AudioManager.instancia != null)
+            AudioManager.instancia.ReproducirMoneda();
+
+        StartCoroutine(AnimacionRecoleccion());
     }
 
     IEnumerator AnimacionRecoleccion()
     {
         float tiempo = 0f;
-        float duracionAnimacion = 0.25f;
         Vector3 escalaInicial = transform.localScale;
         Vector3 posicionInicial = transform.position;
-
-        if (miCollider != null)
-            miCollider.enabled = false;
 
         while (tiempo < duracionAnimacion)
         {
             tiempo += Time.deltaTime;
             float progreso = tiempo / duracionAnimacion;
 
-            transform.position = posicionInicial + Vector3.up * (progreso * 1.5f);
+            transform.position = posicionInicial + Vector3.up * (progreso * alturaSubida);
             transform.localScale = Vector3.Lerp(escalaInicial, Vector3.zero, progreso);
 
             yield return null;

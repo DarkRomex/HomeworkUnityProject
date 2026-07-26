@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EntradaBocaMario : MonoBehaviour
 {
@@ -17,6 +18,10 @@ public class EntradaBocaMario : MonoBehaviour
             if (AudioManager.instancia != null)
             {
                 AudioManager.instancia.CambiarEscenaConSonido(nombreEscenaInterior);
+            }
+            else
+            {
+                SceneManager.LoadScene(nombreEscenaInterior);
             }
         }
     }
