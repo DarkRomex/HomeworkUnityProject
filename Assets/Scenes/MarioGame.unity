@@ -507,11 +507,53 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!65 &505691764
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505691761}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.03, y: 0.01, z: 0.03}
+  m_Center: {x: 0, y: 0, z: -0.009}
+--- !u!135 &505691765
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 505691761}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.04
+  m_Center: {x: 0, y: 0.044, z: -0.008}
 --- !u!1 &680453088
 GameObject:
   m_ObjectHideFlags: 0
@@ -1073,6 +1115,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eecef13bce15488438c2e3ba9a082a26, type: 3}
       insertIndex: -1
       addedObject: {fileID: 505691763}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eecef13bce15488438c2e3ba9a082a26, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 505691765}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: eecef13bce15488438c2e3ba9a082a26, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 505691764}
   m_SourcePrefab: {fileID: 100100000, guid: eecef13bce15488438c2e3ba9a082a26, type: 3}
 --- !u!1 &1556900339 stripped
 GameObject:
