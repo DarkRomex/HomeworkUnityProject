@@ -4,72 +4,73 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class MovimientoJugador : MonoBehaviour
 {
-    public float velocidad = 90f;     // ¡Velocidad extrema que tú quieres!
-    public float fuerzaSalto = 8f;
+    [Header("Movimiento")]
+    public float velocidad = 6f;
+    public float fuerzaSalto = 6f;
+
+    [Header("Suelo")]
+    public LayerMask capaSuelo;
+    public float distanciaSuelo = 1.2f;
 
     private Rigidbody rb;
-    private bool enElSuelo;
+    private Vector3 direccion;
+    private bool tocarSuelo;
+    private bool pedirSalto;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = false; 
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; 
-        rb.interpolation = RigidbodyInterpolation.Interpolate; 
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.useGravity = true;
+    }
+
+    void Update()
+    {
+        if (Keyboard.current == null) return;
+
+        float x = 0f;
+        float z = 0f;
+
+        if (Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed)
+            x = -1f;
+
+        if (Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed)
+            x = 1f;
+
+        if (Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed)
+            z = 1f;
+
+        if (Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed)
+            z = -1f;
+
+        direccion = new Vector3(x, 0f, z).normalized;
+
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+            pedirSalto = true;
     }
 
     void FixedUpdate()
     {
-        if (Keyboard.current == null) return;
+        Vector3 origenRaycast = transform.position + Vector3.up * 0.2f;
+        tocarSuelo = Physics.Raycast(origenRaycast, Vector3.down, distanciaSuelo, capaSuelo);
 
-        // --- Detección de teclas ---
-        float movimientoX = 0f;
-        float movimientoZ = 0f;
+        Vector3 velocidadActual = rb.linearVelocity;
+        Vector3 nuevaVelocidad = new Vector3(
+            direccion.x * velocidad,
+            velocidadActual.y,
+            direccion.z * velocidad
+        );
 
-        if (Keyboard.current.aKey.isPressed) movimientoX = -1f;
-        if (Keyboard.current.dKey.isPressed) movimientoX = 1f;
-        if (Keyboard.current.wKey.isPressed) movimientoZ = 1f;
-        if (Keyboard.current.sKey.isPressed) movimientoZ = -1f;
+        rb.linearVelocity = nuevaVelocidad;
 
-        Vector3 inputDir = new Vector3(movimientoX, 0f, movimientoZ).normalized;
-
-        // --- Raycast para detectar la rampa o el suelo debajo ---
-        RaycastHit hit;
-        bool tocandoSuelo = false;
-        Vector3 direccionEnPendiente = inputDir;
-
-        // Lanzamos un rayo hacia abajo desde la esfera para ver la inclinación de la rampa
-        if (Physics.Raycast(transform.position + Vector3.up * 0.2f, Vector3.down, out hit, 1.5f))
+        if (pedirSalto && tocarSuelo)
         {
-            if (hit.collider.gameObject != gameObject)
-            {
-                tocandoSuelo = true;
-                // Proyectamos el movimiento sobre el plano de la rampa para que no despegue
-                direccionEnPendiente = Vector3.ProjectOnPlane(inputDir, hit.normal);
-            }
-        }
-
-        Vector3 velocidadDeseada = direccionEnPendiente * velocidad;
-
-        if (tocandoSuelo)
-        {
-            rb.useGravity = false; // Desactivamos gravedad en la rampa para evitar tirones
-            velocidadDeseada.y -= 10f; // Fuerza constante hacia abajo para mantenerla pegada
-        }
-        else
-        {
-            rb.useGravity = true; // Gravedad normal si salta o está en el aire
-            velocidadDeseada.y = rb.linearVelocity.y;
-        }
-
-        rb.linearVelocity = velocidadDeseada;
-
-        // --- Salto con Espacio ---
-        if (Keyboard.current.spaceKey.wasPressedThisFrame && tocandoSuelo)
-        {
-            rb.useGravity = true;
             rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
             rb.AddForce(Vector3.up * fuerzaSalto, ForceMode.Impulse);
         }
+
+        pedirSalto = false;
     }
 }
